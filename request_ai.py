@@ -9,9 +9,10 @@ load_dotenv()
 
 def genai_error(i, e, m):
     wait = 2 ** i
-    print(f"Attempt {i + 1}/5 failed: {e}")
-    print(f"Retrying model {m} in {wait} seconds...")
-    time.sleep(wait)
+    print(f"Attempt {i + 1}/5 failed.") #: {e}
+    if i < 4:
+        print(f"Retrying model {m} in {wait} seconds...")
+        time.sleep(wait)
 
 
 class RequestAI:
@@ -21,15 +22,13 @@ class RequestAI:
 
     def request_ai(self, prompt):
 
-        for m in range(len(self.models)):
+        for m in self.models:
 
             for i in range(5):
                 try:
-                    response = self.client.models.generate_content(model=self.models[m], contents=prompt)
+                    response = self.client.models.generate_content(model=m, contents=prompt, )
                     return response.text
-                except ServerError as e:
-                    genai_error(i, e, self.models[m])
-                except ClientError as e:
-                    genai_error(i, e, self.models[m])
+                except (ServerError, ClientError) as e:
+                    genai_error(i, e, m)
 
         return None

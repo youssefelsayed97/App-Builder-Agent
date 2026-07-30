@@ -1,5 +1,6 @@
+import json
 from request_ai import RequestAI
-
+from pprint import pprint
 
 class PlannerAgent:
     def __init__(self):
@@ -52,4 +53,5 @@ class PlannerAgent:
                 }}
                 """
         result = self.ai.request_ai(prompt)
-        return result if result else "Planner Agent Return None"
+        pprint(result)
+        return json.loads(result) if result else None

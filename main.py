@@ -1,7 +1,6 @@
-from Agents.cooder import CoderAgent
+from Agents.coder import CoderAgent
 from Agents.planner import PlannerAgent
-import json
-
+from pprint import pprint
 
 def main():
     idea = input("App idea: ")
@@ -9,17 +8,17 @@ def main():
     planner = PlannerAgent()
 
     response = planner.plan(idea)
-    print(response)
+    pprint(response)
 
-    plan_result = json.loads(response)
+    coder = CoderAgent(response)
+    root = coder.create_folders()
 
-    coder = CoderAgent(plan_result)
-    coder.create_folders()
+    coder_results = coder.code()
+    if coder_results:
 
-    code_agent_result = coder.code(plan_result)
-    print(code_agent_result)
+        coder.save_files(result=coder_results, root=root)
 
-    # print(coderesult)
+        print(coder_results["project_name"], "has been created")
 
 
 if __name__ == "__main__":
