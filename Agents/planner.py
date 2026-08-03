@@ -1,5 +1,8 @@
 import json
-from request_ai import RequestAI
+
+from google.genai._gaos.resources.interactions.googlemapsresultstep import result
+
+from Utils.request_ai import RequestAI
 from pprint import pprint
 
 class PlannerAgent:
@@ -29,7 +32,7 @@ class PlannerAgent:
                 - features
                 - required assets
                 
-                Important: Return ONLY valid JSON.
+                [Important: Return ONLY valid JSON. No ```json]
 
                 Schema:
                 
@@ -52,6 +55,48 @@ class PlannerAgent:
                     }}
                 }}
                 """
-        result = self.ai.request_ai(prompt)
-        pprint(result)
-        return json.loads(result) if result else None
+
+        for _ in range(3):
+            result = self.ai.request_ai(prompt)
+            pprint(result)
+            if not result:
+                continue
+
+            result = result.strip()
+
+            if result.startswith("```"):
+                result = result.replace("```json", "").replace("```", "").strip()
+
+            try:
+                return json.loads(result)
+            except json.JSONDecodeError:
+                prompt = f"""
+                           The previous response was NOT valid JSON.
+                            Return ONLY corrected valid JSON.
+
+                             Schema:
+
+                                 {{
+                                     "app_name": "",
+                                     "app_type": "",
+                                     "description": "",
+                                     "screens": [
+                                         {{
+                                             "name": "",
+                                             "purpose": ""
+                                         }}
+                                     ],
+                                     "features": [],
+                                     "assets": [],
+                                     "theme": {{
+                                         "style": "",
+                                         "primary_color": "",
+                                         "secondary_color": ""
+                                     }}
+                                 }}
+                            Previous response:
+                                    {result}
+                        """
+
+        raise RuntimeError("DependencyFixer failed to generate valid JSON after 3 attempts.")
+

@@ -4,6 +4,8 @@ from google.genai.errors import ServerError, ClientError
 from dotenv import load_dotenv
 import os
 
+from typing_extensions import runtime
+
 load_dotenv()
 
 
@@ -18,7 +20,7 @@ def genai_error(i, e, m):
 class RequestAI:
     def __init__(self):
         self.client = genai.Client(api_key=os.getenv("GENIA_API_KEY"))
-        self.models = ["gemini-2.5-flash-lite", "gemini-2.5-flash"]
+        self.models = ["gemini-2.5-flash", "gemini-2.5-flash-lite"]
 
     def request_ai(self, prompt):
 
@@ -26,9 +28,9 @@ class RequestAI:
 
             for i in range(5):
                 try:
-                    response = self.client.models.generate_content(model=m, contents=prompt, )
+                    response = self.client.models.generate_content(model=m, contents=prompt)
                     return response.text
                 except (ServerError, ClientError) as e:
                     genai_error(i, e, m)
 
-        return None
+        raise RuntimeError("Request ai failed. Try again later.")
