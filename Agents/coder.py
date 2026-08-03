@@ -147,4 +147,4 @@ class CoderAgent:
                 {result}
                 """
 
-        raise RuntimeError("DependencyFixer failed to generate valid JSON after 3 attempts.")
+        raise RuntimeError("Coder failed to generate valid JSON after 3 attempts.")

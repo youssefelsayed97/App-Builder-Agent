@@ -98,5 +98,5 @@ class PlannerAgent:
                                     {result}
                         """
 
-        raise RuntimeError("DependencyFixer failed to generate valid JSON after 3 attempts.")
+        raise RuntimeError("Planner failed to generate valid JSON after 3 attempts.")
 
